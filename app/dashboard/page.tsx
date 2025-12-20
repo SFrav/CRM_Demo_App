@@ -85,15 +85,15 @@ export default function DashboardPage() {
     )
   }
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex justify-between items-center">
+    <div className="responsive-space-y animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600">Welcome back! Here's what's happening with your CRM.</p>
+          <h1 className="responsive-title">Dashboard</h1>
+          <p className="responsive-subtitle">Welcome back! Here's what's happening with your CRM.</p>
         </div>
         <button 
           onClick={fetchDashboardData}
-          className="btn-secondary flex items-center"
+          className="btn-secondary flex items-center justify-center sm:justify-start"
           disabled={loading}
         >
           <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
@@ -102,7 +102,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <div className="card hover:shadow-md transition-shadow duration-200">
           <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -180,10 +180,10 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="responsive-grid-2">
         {/* Recent Activities */}
         <div className="card">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-2">
             <h3 className="text-lg font-medium text-gray-900">Recent Activities</h3>
             <Link href="/dashboard/logs" className="text-sm text-primary-600 hover:text-primary-800">
               View all
@@ -191,10 +191,10 @@ export default function DashboardPage() {
           </div>
           <div className="space-y-4">
             {recentActivities.length > 0 ? recentActivities.map((activity) => (
-              <div key={activity.id} className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                <div className="flex-1">
-                  <p className="text-sm text-gray-900">{activity.action}</p>
+              <div key={activity.id} className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-gray-900 break-words">{activity.action}</p>
                   <p className="text-xs text-gray-500">by {activity.user_name} • {getTimeAgo(activity.created_at)}</p>
                 </div>
               </div>
@@ -210,7 +210,7 @@ export default function DashboardPage() {
         {/* Quick Actions */}
         <div className="card">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Link href="/dashboard/tasks" className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200 text-left block">
               <CheckSquare className="w-6 h-6 text-primary-600 mb-2" />
               <p className="text-sm font-medium text-gray-900">Manage Tasks</p>

@@ -7,8 +7,9 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
-    <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-6">
-      <div className="flex items-center flex-1 max-w-lg">
+    <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-3 sm:px-4 lg:px-6">
+      {/* Left side - Search (hidden on mobile, shown on tablet+) */}
+      <div className="hidden sm:flex items-center flex-1 max-w-lg">
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
@@ -21,12 +22,20 @@ export default function Header() {
         </div>
       </div>
       
-      <div className="flex items-center space-x-4">
+      {/* Mobile search button */}
+      <div className="sm:hidden flex-1">
+        <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+          <Search className="w-5 h-5" />
+        </button>
+      </div>
+      
+      {/* Right side - Notifications and User */}
+      <div className="flex items-center space-x-2 sm:space-x-4">
         <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors duration-200">
           <Bell className="w-5 h-5" />
         </button>
         
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3">
           <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
             <User className="w-5 h-5 text-primary-600" />
           </div>

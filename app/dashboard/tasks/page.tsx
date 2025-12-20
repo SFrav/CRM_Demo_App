@@ -173,15 +173,15 @@ export default function TasksPage() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex justify-between items-center">
+    <div className="responsive-space-y animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Tasks</h1>
-          <p className="text-gray-600">Manage and track your team's tasks</p>
+          <h1 className="responsive-title">Tasks</h1>
+          <p className="responsive-subtitle">Manage and track your team's tasks</p>
         </div>
         <button 
           onClick={() => setShowTaskForm(true)}
-          className="btn-primary flex items-center"
+          className="btn-primary flex items-center justify-center sm:justify-start"
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Task
@@ -190,7 +190,7 @@ export default function TasksPage() {
 
       {/* Filters */}
       <div className="card">
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col gap-4">
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -203,11 +203,11 @@ export default function TasksPage() {
               />
             </div>
           </div>
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="all">All Status</option>
               <option value="todo">To Do</option>
@@ -217,7 +217,7 @@ export default function TasksPage() {
             <select
               value={priorityFilter}
               onChange={(e) => setPriorityFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="all">All Priority</option>
               <option value="high">High</option>
@@ -247,11 +247,11 @@ export default function TasksPage() {
 
       {/* Tasks Table */}
       <div className="card p-0">
-        <div className="overflow-x-auto">
+        <div className="table-responsive">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left">
+                <th className="px-3 sm:px-6 py-3 text-left">
                   <input
                     type="checkbox"
                     checked={selectedTasks.length === tasks.length && tasks.length > 0}
@@ -260,16 +260,16 @@ export default function TasksPage() {
                   />
                 </th>
                 <th className="table-header">Task</th>
-                <th className="table-header">Status</th>
-                <th className="table-header">Priority</th>
-                <th className="table-header">Due Date</th>
+                <th className="table-header hidden sm:table-cell">Status</th>
+                <th className="table-header hidden md:table-cell">Priority</th>
+                <th className="table-header hidden lg:table-cell">Due Date</th>
                 <th className="table-header">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {tasks.map((task) => (
                 <tr key={task.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
+                  <td className="px-3 sm:px-6 py-4">
                     <input
                       type="checkbox"
                       checked={selectedTasks.includes(task.id)}
@@ -279,25 +279,34 @@ export default function TasksPage() {
                   </td>
                   <td className="table-cell">
                     <div>
-                      <div className="font-medium text-gray-900">{task.title}</div>
+                      <div className="font-medium text-gray-900 text-sm sm:text-base">{task.title}</div>
                       {task.description && (
-                        <div className="text-sm text-gray-500 truncate max-w-xs">
+                        <div className="text-xs sm:text-sm text-gray-500 truncate max-w-xs">
                           {task.description}
                         </div>
                       )}
+                      {/* Mobile-only status and priority */}
+                      <div className="sm:hidden flex items-center space-x-2 mt-1">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(task.status)}`}>
+                          {task.status.replace('_', ' ')}
+                        </span>
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(task.priority)}`}>
+                          {task.priority}
+                        </span>
+                      </div>
                     </div>
                   </td>
-                  <td className="table-cell">
+                  <td className="table-cell hidden sm:table-cell">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(task.status)}`}>
                       {task.status.replace('_', ' ')}
                     </span>
                   </td>
-                  <td className="table-cell">
+                  <td className="table-cell hidden md:table-cell">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityColor(task.priority)}`}>
                       {task.priority}
                     </span>
                   </td>
-                  <td className="table-cell">
+                  <td className="table-cell hidden lg:table-cell">
                     {task.due_date ? (
                       <div className="flex items-center text-sm text-gray-900">
                         <Calendar className="w-4 h-4 mr-1" />
@@ -308,16 +317,16 @@ export default function TasksPage() {
                     )}
                   </td>
                   <td className="table-cell">
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1 sm:space-x-2">
                       <button 
                         onClick={() => handleEditTask(task)}
-                        className="text-gray-400 hover:text-primary-600 transition-colors duration-200"
+                        className="text-gray-400 hover:text-primary-600 transition-colors duration-200 p-1"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleDeleteTask(task.id)}
-                        className="text-gray-400 hover:text-red-600 transition-colors duration-200"
+                        className="text-gray-400 hover:text-red-600 transition-colors duration-200 p-1"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -332,25 +341,25 @@ export default function TasksPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-700">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="text-sm text-gray-700 text-center sm:text-left">
             Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, (currentPage - 1) * pageSize + tasks.length)} results
           </div>
-          <div className="flex space-x-2">
+          <div className="flex justify-center space-x-1 sm:space-x-2">
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2 sm:px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Previous
+              Prev
             </button>
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+            {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
               const page = i + 1
               return (
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`px-3 py-2 text-sm border rounded-lg ${
+                  className={`px-2 sm:px-3 py-2 text-sm border rounded-lg ${
                     currentPage === page
                       ? 'bg-primary-600 text-white border-primary-600'
                       : 'border-gray-300 hover:bg-gray-50'
@@ -363,7 +372,7 @@ export default function TasksPage() {
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-2 sm:px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
             </button>
