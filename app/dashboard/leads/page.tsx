@@ -309,7 +309,7 @@ export default function LeadsPage() {
                   <td className="table-cell">
                     <div className="flex items-center">
                       <DollarSign className="w-4 h-4 mr-1 text-gray-400" />
-                      {formatCurrency(lead.value)}
+                      {formatCurrency(lead.value || null)}
                     </div>
                   </td>
                   <td className="table-cell">
