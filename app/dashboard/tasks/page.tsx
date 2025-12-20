@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Task } from '@/lib/types/database'
-import { Plus, Search, Filter, MoreHorizontal, Calendar, User, Edit, Trash2 } from 'lucide-react'
+import { Plus, Search, Calendar, Edit, Trash2 } from 'lucide-react'
 import TaskForm from '@/components/forms/TaskForm'
 import { ActivityLogger } from '@/lib/utils/activity-logger'
 import toast from 'react-hot-toast'
@@ -17,18 +17,22 @@ export default function TasksPage() {
   const [selectedTasks, setSelectedTasks] = useState<string[]>([])
   const [showTaskForm, setShowTaskForm] = useState(false)
   const [editingTask, setEditingTask] = useState<Task | undefined>()
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const pageSize = 10
   const supabase = createClient()
 
   useEffect(() => {
     fetchTasks()
-  }, [])
+  }, [currentPage])
 
   const fetchTasks = async () => {
     try {
       let query = supabase
         .from('tasks')
-        .select('*')
+        .select('*', { count: 'exact' })
         .order('created_at', { ascending: false })
+        .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
 
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter)
@@ -42,10 +46,11 @@ export default function TasksPage() {
         query = query.ilike('title', `%${searchQuery}%`)
       }
 
-      const { data, error } = await query
+      const { data, error, count } = await query
 
       if (error) throw error
       setTasks(data || [])
+      setTotalPages(Math.ceil((count || 0) / pageSize))
     } catch (error) {
       console.error('Error fetching tasks:', error)
     } finally {
@@ -55,6 +60,7 @@ export default function TasksPage() {
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
+      setCurrentPage(1)
       fetchTasks()
     }, 300)
 
@@ -323,6 +329,47 @@ export default function TasksPage() {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-700">
+            Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, (currentPage - 1) * pageSize + tasks.length)} results
+          </div>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const page = i + 1
+              return (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3 py-2 text-sm border rounded-lg ${
+                    currentPage === page
+                      ? 'bg-primary-600 text-white border-primary-600'
+                      : 'border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  {page}
+                </button>
+              )
+            })}
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {tasks.length === 0 && (
         <div className="text-center py-12">
