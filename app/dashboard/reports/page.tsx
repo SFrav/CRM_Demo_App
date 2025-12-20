@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { BarChart3, TrendingUp, Users, UserPlus, CheckSquare, DollarSign, Calendar, Download } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 interface ReportData {
   totalTasks: number
@@ -76,6 +77,50 @@ export default function ReportsPage() {
   const conversionRate = reportData ? (reportData.convertedLeads / reportData.totalLeads * 100) || 0 : 0
   const taskCompletionRate = reportData ? (reportData.completedTasks / reportData.totalTasks * 100) || 0 : 0
 
+  const exportToCSV = () => {
+    if (!reportData) return
+
+    try {
+      const csvData = [
+        ['CRM Report - Generated on', new Date().toLocaleDateString()],
+        [''],
+        ['Key Metrics'],
+        ['Metric', 'Value'],
+        ['Total Tasks', reportData.totalTasks],
+        ['Completed Tasks', reportData.completedTasks],
+        ['Task Completion Rate', `${taskCompletionRate.toFixed(1)}%`],
+        ['Total Leads', reportData.totalLeads],
+        ['Converted Leads', reportData.convertedLeads],
+        ['Conversion Rate', `${conversionRate.toFixed(1)}%`],
+        ['Total Team Members', reportData.totalTeamMembers],
+        ['Active Team Members', reportData.activeMembers],
+        ['Total Pipeline Value', `$${reportData.totalValue.toLocaleString()}`],
+        [''],
+        ['Monthly Performance'],
+        ['Month', 'Tasks', 'Leads', 'Conversions'],
+        ...reportData.monthlyStats.map(stat => [stat.month, stat.tasks, stat.leads, stat.conversions])
+      ]
+
+      const csvContent = csvData.map(row => row.join(',')).join('\n')
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob)
+        link.setAttribute('href', url)
+        link.setAttribute('download', `crm-report-${new Date().toISOString().split('T')[0]}.csv`)
+        link.style.visibility = 'hidden'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        toast.success('Report exported successfully!')
+      }
+    } catch (error) {
+      console.error('Error exporting report:', error)
+      toast.error('Failed to export report')
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -102,7 +147,11 @@ export default function ReportsPage() {
             <option value="90">Last 90 days</option>
             <option value="365">Last year</option>
           </select>
-          <button className="btn-primary flex items-center">
+          <button 
+            onClick={exportToCSV}
+            className="btn-primary flex items-center"
+            disabled={!reportData}
+          >
             <Download className="w-4 h-4 mr-2" />
             Export
           </button>
