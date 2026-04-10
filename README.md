@@ -75,8 +75,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 2. Run from terminal in repo path `npx supabase link --project-ref <ref string>`. You may need to run `npm install supabase --save-dev` first.
 3. Run from terminal in repo path `npx supabase migration new 0init`
 4. Copy and paste the contents of `lib/database/schema.sql` into the newly created supabase/migrations/<timestamp>0init.sql
-5. Run npx supabase db push
+5. Run `npx supabase db push`
+
 OR
+
 1. Go to your Supabase project dashboard
 2. Navigate to SQL Editor
 3. Copy and paste the contents of `lib/database/schema.sql`
@@ -90,6 +92,7 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
 Close using ctrl-c. If using ctrl-z in Linux, then run `fuser -k 3000/tcp` to close the port
 
 ### 6. Login to the Demo
