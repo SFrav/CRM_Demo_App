@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { useMemo } from 'react'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -29,7 +30,7 @@ const navigation = [
 export default function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleLogout = async () => {

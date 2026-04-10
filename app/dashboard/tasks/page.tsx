@@ -7,6 +7,7 @@ import { Plus, Search, Calendar, Edit, Trash2 } from 'lucide-react'
 import TaskForm from '@/components/forms/TaskForm'
 import { ActivityLogger } from '@/lib/utils/activity-logger'
 import toast from 'react-hot-toast'
+import TasksLoading from 'app/dashboard/tasks/loading'
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -22,9 +23,9 @@ export default function TasksPage() {
   const pageSize = 10
   const supabase = createClient()
 
-  useEffect(() => {
-    fetchTasks()
-  }, [currentPage])
+  // useEffect(() => {
+  //   fetchTasks()
+  // }, [currentPage])
 
   const fetchTasks = async () => {
     try {
@@ -165,11 +166,7 @@ export default function TasksPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-      </div>
-    )
+    return <TasksLoading />
   }
 
   return (

@@ -17,7 +17,8 @@ interface TeamMemberFormProps {
 }
 
 interface TeamMemberFormData {
-  name: string
+  first_name: string
+  last_name: string
   email: string
   phone: string
   role: string
@@ -57,7 +58,8 @@ export default function TeamMemberForm({ isOpen, onClose, onSuccess, member }: T
   
   const { register, handleSubmit, formState: { errors }, reset } = useForm<TeamMemberFormData>({
     defaultValues: {
-      name: '',
+      first_name: '',
+      last_name: '',
       email: '',
       phone: '',
       role: 'Sales Rep',
@@ -70,7 +72,8 @@ export default function TeamMemberForm({ isOpen, onClose, onSuccess, member }: T
   useEffect(() => {
     if (member) {
       reset({
-        name: member.name,
+        first_name: member.first_name,
+        last_name: member.last_name,
         email: member.email,
         phone: member.phone || '',
         role: member.role,
@@ -80,7 +83,8 @@ export default function TeamMemberForm({ isOpen, onClose, onSuccess, member }: T
       setPhone(member.phone || '')
     } else {
       reset({
-        name: '',
+        first_name: '',
+        last_name: '',
         email: '',
         phone: '',
         role: 'Sales Rep',
@@ -108,7 +112,7 @@ export default function TeamMemberForm({ isOpen, onClose, onSuccess, member }: T
         if (error) throw error
         
         // Log the activity
-        await ActivityLogger.teamMemberUpdated(member.id, data.name, {
+        await ActivityLogger.teamMemberUpdated(member.id, data.first_name, data.last_name, {
           role: data.role,
           department: data.department,
           status: data.status
@@ -126,7 +130,7 @@ export default function TeamMemberForm({ isOpen, onClose, onSuccess, member }: T
         
         // Log the activity
         if (newMember) {
-          await ActivityLogger.teamMemberCreated(newMember.id, data.name)
+          await ActivityLogger.teamMemberCreated(newMember.id, data.first_name, data.last_name)
         }
         
         toast.success('Team member added successfully!')
@@ -150,38 +154,51 @@ export default function TeamMemberForm({ isOpen, onClose, onSuccess, member }: T
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Name *
+              First name *
             </label>
             <input
-              {...register('name', { required: 'Name is required' })}
+              {...register('first_name', { required: 'Name is required' })}
               className="input-field"
               placeholder="Enter full name"
             />
-            {errors.name && (
+            {errors.first_name && (
               <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
             )}
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email *
+              Surname *
             </label>
             <input
-              {...register('email', {
-                required: 'Email is required',
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Invalid email address'
-                }
-              })}
-              type="email"
+              {...register('last_name', { required: 'Name is required' })}
               className="input-field"
-              placeholder="Enter email address"
+              placeholder="Enter full name"
             />
-            {errors.email && (
-              <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
+            {errors.last_name && (
+              <p className="text-red-600 text-sm mt-1">{errors.name.message}</p>
             )}
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email *
+          </label>
+          <input
+            {...register('email', {
+              required: 'Email is required',
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: 'Invalid email address'
+              }
+            })}
+            type="email"
+            className="input-field"
+            placeholder="Enter email address"
+          />
+          {errors.email && (
+            <p className="text-red-600 text-sm mt-1">{errors.email.message}</p>
+          )}
         </div>
 
         <div>

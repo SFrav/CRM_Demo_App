@@ -7,6 +7,7 @@ import { Plus, Search, Mail, Phone, Building, MoreHorizontal, UserPlus, DollarSi
 import LeadForm from '@/components/forms/LeadForm'
 import { ActivityLogger } from '@/lib/utils/activity-logger'
 import toast from 'react-hot-toast'
+import LeadsLoading from 'app/dashboard/leads/loading'
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([])
@@ -22,9 +23,9 @@ export default function LeadsPage() {
   const pageSize = 10
   const supabase = createClient()
 
-  useEffect(() => {
-    fetchLeads()
-  }, [currentPage])
+  // useEffect(() => {
+  //   fetchLeads()
+  // }, [currentPage])
 
   const fetchLeads = async () => {
     try {
@@ -149,11 +150,8 @@ export default function LeadsPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-      </div>
-    )
+    return <LeadsLoading />
+    
   }
 
   return (

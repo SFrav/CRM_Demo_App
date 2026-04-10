@@ -86,30 +86,30 @@ export const ActivityLogger = {
       details: { name: leadName }
     }),
 
-  teamMemberCreated: (memberId: string, memberName: string, userName: string = 'Demo User') =>
+  teamMemberCreated: (memberId: string, memberFirstName: string, memberLastName: string, userName: string = 'Demo User') =>
     logActivity({
       action: 'Team member added',
       entityType: 'team_member',
       entityId: memberId,
       userName,
-      details: { name: memberName }
+      details: { Name: memberFirstName.concat(" ", memberLastName) }
     }),
 
-  teamMemberUpdated: (memberId: string, memberName: string, changes: any, userName: string = 'Demo User') =>
+  teamMemberUpdated: (memberId: string, memberFirstName: string, memberLastName: string, changes: any, userName: string = 'Demo User') =>
     logActivity({
       action: 'Team member updated',
       entityType: 'team_member',
       entityId: memberId,
       userName,
-      details: { name: memberName, changes }
+      details: { Name: memberFirstName.concat(" ", memberLastName), changes }
     }),
 
-  teamMemberDeleted: (memberId: string, memberName: string, userName: string = 'Demo User') =>
+  teamMemberDeleted: (memberId: string, memberFirstName: string, memberLastName: string, userName: string = 'Demo User') =>
     logActivity({
       action: 'Team member removed',
       entityType: 'team_member',
       entityId: memberId,
       userName,
-      details: { name: memberName }
+      details: { Name: memberFirstName.concat(" ", memberLastName) }
     })
 }

@@ -1,5 +1,7 @@
+CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA pg_catalog;
+
 -- Create tables
-CREATE TABLE IF NOT EXISTS tasks (
+CREATE TABLE IF NOT EXISTS public.tasks (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title VARCHAR(255) NOT NULL,
   description TEXT,
@@ -11,9 +13,10 @@ CREATE TABLE IF NOT EXISTS tasks (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS team_members (
+CREATE TABLE IF NOT EXISTS public.team_members (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
+  first_name VARCHAR(255) NOT NULL,
+  last_name VARCHAR(255) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   role VARCHAR(100) NOT NULL,
   department VARCHAR(100),
@@ -24,7 +27,7 @@ CREATE TABLE IF NOT EXISTS team_members (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS leads (
+CREATE TABLE IF NOT EXISTS public.leads (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255),
@@ -39,7 +42,7 @@ CREATE TABLE IF NOT EXISTS leads (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS activity_logs (
+CREATE TABLE IF NOT EXISTS public.activity_logs (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   action VARCHAR(255) NOT NULL,
   entity_type VARCHAR(50) NOT NULL,
@@ -51,36 +54,36 @@ CREATE TABLE IF NOT EXISTS activity_logs (
 );
 
 -- Create indexes for better performance
-CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
-CREATE INDEX IF NOT EXISTS idx_tasks_assigned_to ON tasks(assigned_to);
-CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON tasks(due_date);
-CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
-CREATE INDEX IF NOT EXISTS idx_leads_assigned_to ON leads(assigned_to);
-CREATE INDEX IF NOT EXISTS idx_activity_logs_entity ON activity_logs(entity_type, entity_id);
-CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON activity_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_tasks_status ON public.tasks(status);
+CREATE INDEX IF NOT EXISTS idx_tasks_assigned_to ON public.tasks(assigned_to);
+CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON public.tasks(due_date);
+CREATE INDEX IF NOT EXISTS idx_leads_status ON public.leads(status);
+CREATE INDEX IF NOT EXISTS idx_leads_assigned_to ON public.leads(assigned_to);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_entity ON public.activity_logs(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON public.activity_logs(created_at DESC);
 
 -- Enable RLS
-ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
-ALTER TABLE team_members ENABLE ROW LEVEL SECURITY;
-ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
-ALTER TABLE activity_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.team_members ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.activity_logs ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies (allow all for demo purposes)
-CREATE POLICY "Allow all operations on tasks" ON tasks FOR ALL USING (true);
-CREATE POLICY "Allow all operations on team_members" ON team_members FOR ALL USING (true);
-CREATE POLICY "Allow all operations on leads" ON leads FOR ALL USING (true);
-CREATE POLICY "Allow all operations on activity_logs" ON activity_logs FOR ALL USING (true);
+CREATE POLICY "Allow all operations on tasks" ON public.tasks FOR ALL USING (true);
+CREATE POLICY "Allow all operations on team_members" ON public.team_members FOR ALL USING (true);
+CREATE POLICY "Allow all operations on leads" ON public.leads FOR ALL USING (true);
+CREATE POLICY "Allow all operations on activity_logs" ON public.activity_logs FOR ALL USING (true);
 
 -- Insert sample data
-INSERT INTO team_members (name, email, role, department, phone, status) VALUES
-('John Doe', 'john@demo.com', 'Sales Manager', 'Sales', '+1-555-0101', 'active'),
-('Jane Smith', 'jane@demo.com', 'Developer', 'Engineering', '+1-555-0102', 'active'),
-('Mike Johnson', 'mike@demo.com', 'Marketing Lead', 'Marketing', '+1-555-0103', 'active'),
-('Sarah Wilson', 'sarah@demo.com', 'Support Specialist', 'Support', '+1-555-0104', 'active'),
-('David Brown', 'david@demo.com', 'Product Manager', 'Product', '+1-555-0105', 'active'),
-('Lisa Davis', 'lisa@demo.com', 'Designer', 'Design', '+1-555-0106', 'active'),
-('Tom Anderson', 'tom@demo.com', 'Sales Rep', 'Sales', '+1-555-0107', 'active'),
-('Emma Taylor', 'emma@demo.com', 'QA Engineer', 'Engineering', '+1-555-0108', 'active');
+INSERT INTO public.team_members (first_name, last_name, email, role, department, phone, status) VALUES
+('John', 'Doe', 'john@demo.com', 'Sales Manager', 'Sales', '+1-555-0101', 'active'),
+('Jane', 'Smith', 'jane@demo.com', 'Developer', 'Engineering', '+1-555-0102', 'active'),
+('Mike', 'Johnson', 'mike@demo.com', 'Marketing Lead', 'Marketing', '+1-555-0103', 'active'),
+('Sarah', 'Wilson', 'sarah@demo.com', 'Support Specialist', 'Support', '+1-555-0104', 'active'),
+('David', 'Brown', 'david@demo.com', 'Product Manager', 'Product', '+1-555-0105', 'active'),
+('Lisa', 'Davis', 'lisa@demo.com', 'Designer', 'Design', '+1-555-0106', 'active'),
+('Tom', 'Anderson', 'tom@demo.com', 'Sales Rep', 'Sales', '+1-555-0107', 'active'),
+('Emma', 'Taylor', 'emma@demo.com', 'QA Engineer', 'Engineering', '+1-555-0108', 'active');
 
 INSERT INTO tasks (title, description, status, priority, due_date) VALUES
 ('Setup CRM Database', 'Configure the initial database schema and tables', 'completed', 'high', NOW() - INTERVAL '2 days'),
@@ -112,6 +115,38 @@ END;
 $$ language 'plpgsql';
 
 -- Create triggers for updated_at
-CREATE TRIGGER update_tasks_updated_at BEFORE UPDATE ON tasks FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_team_members_updated_at BEFORE UPDATE ON team_members FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-CREATE TRIGGER update_leads_updated_at BEFORE UPDATE ON leads FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_tasks_updated_at BEFORE UPDATE ON public.tasks FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_team_members_updated_at BEFORE UPDATE ON public.team_members FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_leads_updated_at BEFORE UPDATE ON public.leads FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Create fuzzy search function
+CREATE INDEX IF NOT EXISTS team_name_fuzzy_idx ON public.team_members USING gin ((first_name || ' ' || last_name) gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS team_email_fuzzy_idx ON public.team_members USING gin (email gin_trgm_ops);
+
+CREATE OR REPLACE FUNCTION public.search_team_fuzzy(search_term text, dept_filter text DEFAULT 'all')
+RETURNS SETOF public.team_members
+SET search_path TO public
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT * FROM public.team_members
+        WHERE
+            (dept_filter = 'all' OR department = dept_filter)
+            AND (
+                first_name || ' ' || last_name  ILIKE search_term || '%'
+                OR email ILIKE search_term || '%'
+                OR (length(search_term) >= 3 AND similarity(first_name || ' ' || last_name, search_term) > 0.2)
+                OR (length(search_term) >= 3 AND similarity(email, search_term) > 0.2)
+                OR first_name || ' ' || last_name  ILIKE '%' || search_term || '%'
+            )
+        ORDER BY
+            CASE
+                WHEN first_name || ' ' || last_name ILIKE search_term || '%' THEN 0
+                WHEN length(search_term) >= 3
+                    THEN 1 - GREATEST(similarity(first_name || ' ' || last_name, search_term), similarity(email, search_term))
+                ELSE 1
+            END,
+            created_at DESC
+            LIMIT 20;
+END;
+$$ LANGUAGE plpgsql;
